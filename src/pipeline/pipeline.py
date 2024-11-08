@@ -7,18 +7,18 @@ from pipeline.l06_models.l06_pipeline import run_layer_06
 from pipeline.l07_model_output.l07_pipeline import run_layer_07
 from pipeline.l08_reporting.l08_pipeline import run_layer_08
 
-def run_pipeline(config, databricks_client=None, gcs_client=None, bq_client=None):
+def run_pipeline(config, **connections):
     # Run Layer 1: Raw data ingestion and preprocessing
-    data_layer_1 = run_layer_01()
+    l01 = run_layer_01(config, **connections)
     
     # Run Layer 2: Intermediate processing
-    data_layer_2 = run_layer_02(data_layer_1)
+    l02 = run_layer_02(l01)
     
     # Continue sequentially through each layer, passing outputs to inputs
-    data_layer_3 = run_layer_03(data_layer_2)
-    data_layer_4 = run_layer_04(data_layer_3)
-    data_layer_5 = run_layer_05(data_layer_4)
-    model = run_layer_06(data_layer_5)
+    l03 = run_layer_03(l02)
+    l04 = run_layer_04(l03)
+    l05 = run_layer_05(l04)
+    model = run_layer_06(l05)
     predictions = run_layer_07(model)
     
     # Final reporting

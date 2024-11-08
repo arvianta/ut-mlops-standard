@@ -21,65 +21,77 @@ The following is an overview of the project structure, with each directory expla
 ```plaintext
 project/
 ├── data/
-│   ├── 1_raw/                  # Holds raw data as ingested from external sources
-│   ├── 2_intermediate/         # Stores data after general cleansing and standard transformations
-│   ├── 3_primary/              # Contains cleaned, linked, and normalized data
-│   ├── 4_feature/              # Stores engineered features for modeling
-│   ├── 5_model_input/          # Contains data ready for model input after selection and split
-│   ├── 6_models/               # Holds model configurations and model binaries
-│   ├── 7_model_output/         # Stores results of model predictions and performance metrics
-│   ├── 8_reporting/            # Contains generated reports and final analysis outputs
+│   ├── 1_raw/                   # Raw data as ingested from external sources
+│   ├── 2_intermediate/          # Data after general cleansing and standard transformations
+│   ├── 3_primary/               # Cleaned, linked, and normalized data
+│   ├── 4_feature/               # Engineered features for modeling
+│   ├── 5_model_input/           # Data ready for model input
+│   ├── 6_model/                 # Model binaries and configurations
+│   ├── 7_model_output/          # Model predictions and performance metrics
+│   ├── 8_reporting/             # Generated reports and final analysis outputs
+│   └── tmp/                     # Temporary data storage
 ├── src/
-│   ├── lib/                    # Common functions library for data cleansing, modeling, etc.
-│   ├── connections/            # Scripts for establishing connections to data sources
-│   ├── ingestion/              # Scripts for data ingestion from various sources
-│   ├── 1_raw_layer/            # Scripts for loading and handling raw data
-│   ├── 2_intermediate_layer/   # Data cleansing scripts (e.g., null handling, type conversion)
-│   ├── 3_primary_layer/        # Data linking, normalization, and joining scripts
-│   ├── 4_feature_layer/        # Scripts for feature engineering
-│   ├── 5_model_input_layer/    # Scripts for data selection, imputation, and handling outliers
-│   ├── 6_models_layer/         # Model selection, training, and tuning scripts
-│   ├── 7_model_output_layer/   # Scripts to store and manage model results
-│   ├── 8_reporting_layer/      # Scripts to generate reports for model evaluation
-│   └── main.py                 # Main entry point to initiate the pipeline
-├── notebooks/                  # Jupyter notebooks for exploration, experimentation, and EDA
-├── config/                     # Configuration files for connections to GCP, Databricks, etc.
-└── README.md                   # Project overview and structure explanation
+│   ├── main.py                  # Main entry point for the pipeline
+│   ├── __init__.py
+│   ├── library/                 # Common functions for data processing, MLflow integration, etc.
+│   ├── pipeline/                # Pipeline processing steps organized by layer
+│   │   ├── l00_preraw/          # Preprocessing raw data
+│   │   ├── l01_raw/             # Raw data ingestion and processing
+│   │   ├── l02_intermediate/    # Cleansing and standard processing
+│   │   ├── l03_primary/         # Data linking and normalization
+│   │   ├── l04_feature/         # Feature engineering scripts
+│   │   ├── l05_model_input/     # Data preparation for model input
+│   │   ├── l06_models/          # Model training, tuning, and storage
+│   │   ├── l07_model_output/    # Model predictions and evaluations
+│   │   └── l08_reporting/       # Report generation
+│   └── utils/                   # Utility scripts and connectors for external data sources
+│       ├── config.py            # Configuration file handling
+│       └── connectors/          # Databricks, GCP connectors for data ingestion
+├── notebooks/                   # Jupyter notebooks for EDA and data exploration
+├── config/                      # Configuration files for project settings
+├── log/                         # Log files for tracking
+├── .gitignore                   # Files to ignore in Git
+├── README.md                    # Project overview and structure explanation
+└── requirements.txt             # Project dependencies
 ```
 
 ## Directory Overview
 ### 1. ``data/``
-This directory contains structured subfolders to handle data as it progresses through the project lifecycle. Data is organized in a sequence of layers that mirror the data pipeline.
+This directory contains structured subfolders to manage data across the project lifecycle. Each folder represents a processing stage:
 - ``1_raw/``: Contains raw, unprocessed data as ingested.
-- ``2_intermediate/``: Data after initial cleansing (e.g., null handling, type standardization).
-- ``3_primary/``: Cleaned and joined data with primary/foreign keys, consistent naming conventions, and normalization.
-- ``4_feature/``: Feature-engineered data ready for use in modeling.
-- ``5_model_input/``: Finalized dataset for modeling, including selected features and imputed values.
-- ``6_models/``: Stores trained models and configurations.
-- ``7_model_output/``: Contains model predictions and evaluation metrics.
-- ``8_reporting/``: Holds final reports generated from model analysis and performance metrics.
+- ``2_intermediate/``: Data after initial cleansing.
+- ``3_primary/``: Cleaned and joined data.
+- ``4_feature/``: Feature-engineered data for modeling.
+- ``5_model_input/``: Finalized datasets for model training.
+- ``6_models/``: Stored model binaries and configurations.
+- ``7_model_output/``: Model predictions and evaluation metrics.
+- ``8_reporting/``: Reports from analysis and performance metrics.
+- ``tmp/``: Temporary storage for files.
 
 ### 2. ``src/``
-This directory houses the main codebase, organized by layers, with each layer handling specific processing steps. Scripts in each layer make use of the functions in the ``lib`` directory for standardized, reusable code.
-- ``lib/``: Contains common functions for data cleansing, feature engineering, modeling, and MLflow logging.
-- ``connections/``: Scripts for establishing connections to external data sources (GCP, Databricks, etc.).
-- ``ingestion/``: Scripts for data ingestion from various sources, including GCS, Databricks Unity Catalog, and local files.
-- ``1_raw_layer/``: Scripts for loading and processing raw data.
-- ``2_intermediate_layer/``: Cleansing and standardizing data types and formats.
-- ``3_primary_layer/``: Joins and normalizes data, preparing a structured dataset.
-- ``4_feature_layer/``: Applies feature engineering to enhance predictive power.
-- ``5_model_input_layer/``: Conducts feature selection, outlier handling, and splits data.
-- ``6_models_layer/``: Manages model training, hyperparameter tuning, and selection.
-- ``7_model_output_layer/``: Stores and organizes model output and evaluation results.
-- ``8_reporting_layer/``: Generates reports and case-specific analyses.
+Contains the main codebase, organized by layer, with each layer handling a different pipeline stage. Reusable functions are housed in ``library/``
 - ``main.py``: The main entry point that initializes and runs the pipeline.
+- ``library/``: Contains common functions for data processing and MLflow integration.
+- ``pipeline/``: Scripts organized by processing layers (e.g., raw, feature engineering, model training).
+    - ``l00_preraw/``: Ensuring data is in a proper tabular format. (optional)
+    - ``l01_raw/``: Scripts for loading and processing raw data.
+    - ``l02_intermediate/``: Cleansing and standard processing.
+    - ``l03_primary/``: Data linking and normalization.
+    - ``l04_feature/``: Feature engineering for model training.
+    - ``l05_model_input/``: Data preparation for model input.
+    - ``l06_models/``: Model training, tuning, and storage.
+    - ``l07_model_output/``: Model predictions and evaluations.
+    - ``l08_reporting/``: Report generation and analysis.
+- ``utils/``: Utility scripts and connectors.
+    - ``config.py``: Handles project configurations.
+    - ``connectors/``: Establishes connections to external sources (e.g., Databricks, GCP).
 
 ### 3. ``notebooks/``
 This directory contains Jupyter notebooks for exploratory data analysis (EDA), experimentation, and data science exploration. Notebooks are named to follow the layer sequence (e.g., ``1_raw_eda.ipynb``, ``2_intermediate_cleaning.ipynb``) to maintain an intuitive flow.
 
 ### 4. ``config/``
-Holds configuration files and connection information for cloud services (e.g., Google Cloud, Databricks). This enables seamless integration with data sources and deployment environments.
+Contains configuration files (``config.yaml``) for specifying ingestion methods, cloud connections, and project settings.
 
 ## Usage Notes
-- **MLflow Logging**: Logging is centralized within ``src/lib/mlflow_logging.py``. Each layer imports this module as needed to standardize tracking and ensure traceability across all processes.
-- **Library**: Reusable functions in ``lib`` make it easy to apply standardized operations across all layers. Add to this library as needed to support data cleansing, modeling, or additional functionality.
+- **MLflow Logging**: Logging is centralized within ``src/library/mlflow.py``. Each layer imports this module as needed to standardize tracking and ensure traceability across all processes.
+- **Configuration**: Modify settings in ``config/config.yaml`` to specify ingestion methods and data connections.
