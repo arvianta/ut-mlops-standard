@@ -1,7 +1,8 @@
-from sklearn.model_selection import train_test_split
 import pandas as pd
+from typing import Tuple
+from sklearn.model_selection import train_test_split
 
-def split_data(df: pd.DataFrame, target_column: str, test_size: float = 0.2, random_seed: int = 101):
+def split_data(df: pd.DataFrame, target_column: str, test_size: float = 0.2, random_seed: int = 101) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
     """
     Splits the data into training and testing sets based on the target column.
 

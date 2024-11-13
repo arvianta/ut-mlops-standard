@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Tuple
 import pandas as pd
 
 from .node_knn_imputation import knn_imputation
@@ -8,7 +8,7 @@ from .node_smote import apply_smote
 from src.library.common import save_dict_to_files
 from src.library.mlflow import log_features, log_artifact
 
-def run_layer_05(table: Dict[str, pd.DataFrame]) -> Dict[str, pd.DataFrame]:
+def run_layer_05(table: Dict[str, pd.DataFrame]) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
    """
    Processes data for the model input layer by performing feature selection, 
    imputation, outlier handling, and data splitting in preparation for training.
@@ -65,4 +65,4 @@ def run_layer_05(table: Dict[str, pd.DataFrame]) -> Dict[str, pd.DataFrame]:
    logged_features = log_features(table, "5_model_input")
    log_artifact(*logged_features)
    
-   return table
+   return x_train_smote, y_train_smote, x_test_scaled, y_test
