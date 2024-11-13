@@ -1,6 +1,8 @@
 import pandas as pd
 from typing import Dict, List, Optional, Union
 
+META_COL = "cols_changed"
+
 def clean_col_names(df: pd.DataFrame) -> pd.DataFrame:
     """Clean column names.
 

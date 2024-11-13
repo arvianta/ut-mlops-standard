@@ -1,0 +1,34 @@
+train:
+  table_info:
+    data_types:
+      Age: object
+      Amount_invested_monthly: object
+      Annual_Income: object
+      Changed_Credit_Limit: object
+      Credit_History_Age: object
+      Credit_Mix: object
+      Credit_Score: object
+      Credit_Utilization_Ratio: float64
+      Customer_ID: object
+      Delay_from_due_date: int64
+      ID: int64
+      Interest_Rate: int64
+      Month: object
+      Monthly_Balance: object
+      Monthly_Inhand_Salary: float64
+      Name: object
+      Num_Bank_Accounts: int64
+      Num_Credit_Card: int64
+      Num_Credit_Inquiries: float64
+      Num_of_Delayed_Payment: object
+      Num_of_Loan: object
+      Occupation: object
+      Outstanding_Debt: object
+      Payment_Behaviour: object
+      Payment_of_Min_Amount: object
+      SSN: object
+      Total_EMI_per_month: float64
+      Type_of_Loan: object
+    feature_numbers: 28
+    row_number: 80000
+    table_name: train

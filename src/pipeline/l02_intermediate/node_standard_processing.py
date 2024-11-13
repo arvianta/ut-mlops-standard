@@ -98,7 +98,7 @@ def standard_processing(
 
     if dtype:
         for col, d in dtype.items():
-            if d in {"datetime64[ns]"}:
+            if isinstance(d, str) and d in {"datetime64[ns]"}:
                 if dt_format and dt_format.get(col):
                     typed_data[col] = pd.to_datetime(
                         typed_data[col], errors="coerce", format=dt_format[col]
@@ -107,10 +107,15 @@ def standard_processing(
                     typed_data[col] = pd.to_datetime(
                         typed_data[col], errors="coerce", infer_datetime_format=True
                     )
-            elif d.lower() in {"float64", "int64"}:
+            elif isinstance(d, str) and d.lower() in {"float64", "int64"}:
                 typed_data[col] = pd.to_numeric(typed_data[col], errors="coerce")
 
-        typed_data = typed_data.astype(dtype)
+        # typed_data = typed_data.astype(dtype)
+        valid_dtype = {col: dtype[col] for col in dtype if col in typed_data.columns}
+        # Apply dtype conversion for valid columns only
+        if valid_dtype:
+            typed_data = typed_data.astype(valid_dtype)
+        
         str_columns = typed_data[all_cols].select_dtypes(include=str_types).columns
         typed_data[str_columns] = typed_data[str_columns].applymap(
             lambda x: x.lower() if pd.notna(x) else x

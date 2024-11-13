@@ -1,3 +1,2 @@
-def run_layer_06():
-    df = ""
+def run_layer_06(df):
     return df
