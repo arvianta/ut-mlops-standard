@@ -7,9 +7,17 @@ from .l06_models.l06_pipeline import run_layer_06
 from .l07_model_output.l07_pipeline import run_layer_07
 from .l08_reporting.l08_pipeline import run_layer_08
 from src.library.mlflow import start_mlflow_run
-from src.library.common import clear_yaml_files
+from src.library.common import clear_yaml_files, load_model
 
-def run_pipeline(config, **connections):
+from typing import Dict, Any
+
+def run_pipeline(config: Dict[str, Any], **connections: Dict[str, Any]) -> None:
+    """Runs the data processing and modeling pipeline sequentially through each layer.
+    
+    Args:
+        config (Dict[str, Any]): A dictionary containing configuration parameters.
+        **connections (Dict[str, Any]): Additional keyword arguments for connections.
+    """
     # Start mlflow run
     start_mlflow_run("main")
     
@@ -26,8 +34,18 @@ def run_pipeline(config, **connections):
     l03 = run_layer_03(l02)
     l04 = run_layer_04(l03)
     l05 = run_layer_05(l04)
-    model = run_layer_06(l05)
-    predictions = run_layer_07(model)
     
-    # Final reporting
-    run_layer_08(predictions)
+    # Check the pipeline mode: 'training' or 'inference'
+    if config.get("mode") == "training":
+        # Run Layer 6: Train the model
+        model = run_layer_06(l05)
+    else:
+        # Inference mode: Load pre-trained model from the specified path
+        model = load_model("/data/model")  # Replace this path with external source in the future
+    
+    # Run Layer 7: Score or make predictions using the model
+    score = run_layer_07(model, data=l05)
+    
+    # Final reporting layer, e.g., visualization, logging, or reporting
+    run_layer_08(score)
+

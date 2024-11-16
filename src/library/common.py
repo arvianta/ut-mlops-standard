@@ -2,6 +2,8 @@ import os
 import glob
 import re
 import pandas as pd
+import joblib
+import tensorflow as tf
 from typing import Union, List, Dict
 
 def load_files_to_dict(file_paths: Union[str, List[str]]) -> Dict[str, pd.DataFrame]:
@@ -105,3 +107,27 @@ def standardize_column_names(df: pd.DataFrame) -> pd.DataFrame:
         re.sub(r'[^0-9a-zA-Z]+', '_', col).strip('_').lower() for col in df.columns
     ]
     return df
+
+
+def load_model(model_path: str):
+    """Loads a pre-trained model from the specified file path, supporting .h5 and .pkl formats."""
+    try:
+        if model_path.endswith(".h5"):
+            # Load Keras/TensorFlow model
+            model = tf.keras.models.load_model(model_path)
+            print(f"Keras/TensorFlow model loaded from {model_path}")
+        
+        elif model_path.endswith(".pkl"):
+            # Load model with joblib (for pickled models)
+            model = joblib.load(model_path)
+            print(f"Pickled model loaded from {model_path}")
+        
+        else:
+            raise ValueError("Unsupported model format. Please use a .h5 or .pkl file.")
+
+        return model
+
+    except FileNotFoundError:
+        raise Exception(f"Model file not found at {model_path}")
+    except Exception as e:
+        raise Exception(f"Error loading model: {e}")

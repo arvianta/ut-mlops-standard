@@ -4,6 +4,8 @@ import pandas as pd
 import yaml
 from typing import Dict, Tuple
 
+import tensorflow as tf
+
 
 def config_mlflow(config) -> None:
     """
@@ -136,3 +138,27 @@ def log_artifact(
     
     except Exception as e:
         print(f"Failed to log artifact '{file_to_log}' to path '{artifact_path}': {e}")
+
+
+class TuningMLflowCallback(tf.keras.callbacks.Callback):
+    def __init__(self, trial_id, hyperparameters):
+        super().__init__()
+        self.trial_id = trial_id
+        self.hyperparameters = hyperparameters
+        
+    def on_train_begin(self, logs=None):
+        model_name = f"Trial_{self.trial_id}_d{self.hyperparameters.get('dropout_1')}_{self.hyperparameters.get('dropout_2')}_{self.hyperparameters.get('dropout_3')}_lr{self.hyperparameters.get('learning_rate')}"
+        self.run = mlflow.start_run(run_name=model_name, nested=True)
+        mlflow.log_params(self.hyperparameters)
+        
+    def on_epoch_end(self, epoch, logs=None):
+        if logs:
+            mlflow.log_metrics({
+                "balanced_accuracy": logs.get('balanced_accuracy', 0),
+                "accuracy": logs.get('accuracy', 0),
+                "loss": logs.get('loss', 0),
+                "epoch": epoch
+            }, step=epoch)
+    
+    def on_train_end(self, logs=None):
+        mlflow.end_run()
